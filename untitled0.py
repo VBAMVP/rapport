@@ -9,7 +9,6 @@ import httplib2
 # Remplacez ceci par vos propres informations d'authentification
 CLIENT_ID = "617474917009-egh3ngbg23ti3a3ju2ejdm18kr0pue0n.apps.googleusercontent.com"
 CLIENT_SECRET = "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"
-REFRESH_TOKEN = ""
 
 def create_google_service(refresh_token):
     creds = Credentials(None, refresh_token=refresh_token, token_uri='https://oauth2.googleapis.com/token', client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
