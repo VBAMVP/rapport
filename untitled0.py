@@ -25,7 +25,7 @@ def authenticate_google(creds_json):
     scopes = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/documents']
 
     flow = InstalledAppFlow.from_client_config(creds_json, scopes)
-    flow.redirect_uri = ''  # Remplacez par votre URI de redirection réel
+    flow.redirect_uri = 'https://rapport-mytnctohgff55ttq3tgr8g.streamlit.app/'  # Remplacez par votre URI de redirection réel
 
     if 'creds' not in st.session_state or not st.session_state['creds'].valid:
         if 'creds' in st.session_state and st.session_state['creds'].expired and st.session_state['creds'].refresh_token:
