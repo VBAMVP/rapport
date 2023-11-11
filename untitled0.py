@@ -41,7 +41,7 @@ def authenticate_google(creds_json):
     return st.session_state.get('creds', None)
 def create_google_doc(title):
     """Create a Google Doc with the given title."""
-     try:
+    try:
         docs_service = build('docs', 'v1', credentials=creds)
     except Exception as e:
         print(e)  # Affiche l'erreur dans la console
