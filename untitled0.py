@@ -86,8 +86,12 @@ if uploaded_file is not None:
     creds_json = json.load(uploaded_file)
     creds = authenticate_google(creds_json)
     if creds:
-        # La logique de l'application vient ici
+         st.success("Authentification réussie!")
+    else:
+        st.error("Échec de l'authentification.")
 
+# La logique de l'application vient ici
+print("Creds:", creds)
 # Formulaire pour créer un nouveau document
 with st.form("create_doc"):
     doc_title = st.text_input("Enter the title for the new document")
