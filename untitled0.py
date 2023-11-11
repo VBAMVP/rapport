@@ -54,7 +54,7 @@ def main():
 
     # Google Authentication
     st.subheader("Google Authentication")
-    client_id = "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"  # Replace with your OAuth client ID
+    client_id = "617474917009-egh3ngbg23ti3a3ju2ejdm18kr0pue0n.apps.googleusercontent.com"  # Replace with your OAuth client ID
     token = st.text_input("Enter your Google ID token", type="password")
     
     creds = None
