@@ -32,7 +32,7 @@ def authenticate_google(creds_json):
 def create_google_doc(doc_title, creds):
     """Create a Google Doc with the given title."""
     try:
-        docs_service = build('docs', 'v1', credentials=creds)
+        docs_service = build('docs', 'v1', credentials=st.session_state['creds'])
         document = docs_service.documents().create(body={'title': doc_title}).execute()
         return document.get('documentId')
     except Exception as e:
@@ -43,7 +43,7 @@ def create_google_doc(doc_title, creds):
 def upload_image_to_drive(image_path, creds):
     """Upload an image to Google Drive and return its ID."""
     try:
-        drive_service = build('drive', 'v3', credentials=creds)
+        drive_service = build('drive', 'v3', credentials=st.session_state['creds'])
         file_metadata = {'name': os.path.basename(image_path), 'mimeType': 'image/png'}
         media = MediaFileUpload(image_path, mimetype='image/png')
         file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
@@ -56,7 +56,7 @@ def upload_image_to_drive(image_path, creds):
 def insert_image_to_doc(document_id, image_id, creds):
     """Insert an image into a Google Doc."""
     try:
-        docs_service = build('docs', 'v1', credentials=creds)
+        docs_service = build('docs', 'v1', credentials=st.session_state['creds'])
         requests = [{'insertInlineImage': {
                         'location': {'index': 1},
                         'uri': f'https://drive.google.com/uc?id={image_id}',
