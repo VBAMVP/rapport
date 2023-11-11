@@ -39,6 +39,35 @@ def authenticate_google(creds_json):
                 st.session_state['creds'] = flow.credentials
 
     return st.session_state.get('creds', None)
+def create_google_doc(title):
+    """Create a Google Doc with the given title."""
+    docs_service = build('docs', 'v1', credentials=creds)
+    document = docs_service.documents().create(body={'title': title}).execute()
+    return document.get('documentId')
+
+def upload_image_to_drive(image_path):
+    """Upload an image to Google Drive and return its ID."""
+    drive_service = build('drive', 'v3', credentials=creds)
+    file_metadata = {'name': os.path.basename(image_path), 'mimeType': 'image/png'}
+    media = MediaFileUpload(image_path, mimetype='image/png')
+    file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    return file.get('id')
+
+def insert_image_to_doc(document_id, image_id):
+    """Insert an image into a Google Doc."""
+    docs_service = build('docs', 'v1', credentials=creds)
+    requests = [{'insertInlineImage': {
+                    'location': {'index': 1},
+                    'uri': f'https://drive.google.com/uc?id={image_id}',
+                    'objectSize': {'height': {'magnitude': 50, 'unit': 'PT'}, 'width': {'magnitude': 50, 'unit': 'PT'}}}}]
+    docs_service.documents().batchUpdate(documentId=document_id, body={'requests': requests}).execute()
+
+def insert_text_to_doc(document_id, text):
+    """Insert text into a Google Doc."""
+    docs_service = build('docs', 'v1', credentials=creds)
+    end_index = 1 # You might want to find the correct end index where to insert the text
+    requests = [{'insertText': {'location': {'index': end_index}, 'text': text}}]
+    docs_service.documents().batchUpdate(documentId=document_id, body={'requests': requests}).execute()
 
 # Streamlit Interface
 st.title('Google Docs Creator')
@@ -55,3 +84,33 @@ if uploaded_file is not None:
         # Création des services Google Docs et Drive
         drive_service = build('drive', 'v3', credentials=creds)
         docs_service = build('docs', 'v1', credentials=creds)
+
+# Formulaire pour créer un nouveau document
+with st.form("create_doc"):
+    doc_title = st.text_input("Enter the title for the new document")
+    submitted1 = st.form_submit_button("Create Document")
+    if submitted1:
+        # Créer le document et afficher l'ID
+        document_id = create_google_doc(doc_title)
+        st.write(f"Document created with ID: {document_id}")
+
+# Télécharger et insérer l'image
+with st.form("upload_image"):
+    image_file = st.file_uploader("Upload an image", type=['png', 'jpg', 'jpeg'])
+    submitted2 = st.form_submit_button("Upload and Insert Image")
+    if submitted2 and image_file:
+        # Télécharger l'image sur Google Drive et l'insérer dans le document
+        image_path = image_file.name
+        with open(image_path, "wb") as f:
+            f.write(image_file.getbuffer())
+        image_id = upload_image_to_drive(image_path)
+        insert_image_to_doc(document_id, image_id)
+        st.write("Image inserted in the document.")
+
+# Formulaire pour insérer du texte
+with st.form("insert_text"):
+    text = st.text_area("Enter text to insert into the document")
+    submitted3 = st.form_submit_button("Insert Text")
+    if submitted3:
+        insert_text_to_doc(document_id, text)
+        st.write("Text inserted in the document.")
