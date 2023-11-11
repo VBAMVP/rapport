@@ -91,4 +91,29 @@ if uploaded_file is not None:
         # Formulaire pour créer un nouveau document
         with st.form("create_doc"):
             doc_title = st.text_input("Enter the title for the new document")
-            submitted1 = st.form_submit
+            submitted1 = st.form_submit_button("Create Document")
+            if submitted1:
+                document_id = create_google_doc(doc_title, creds)
+                if document_id:
+                    st.write(f"Document created with ID: {document_id}")
+
+        # Télécharger et insérer l'image
+        with st.form("upload_image"):
+            image_file = st.file_uploader("Upload an image", type=['png', 'jpg', 'jpeg'])
+            submitted2 = st.form_submit_button("Upload and Insert Image")
+            if submitted2 and image_file:
+                image_path = image_file.name
+                with open(image_path, "wb") as f:
+                    f.write(image_file.getbuffer())
+                image_id = upload_image_to_drive(image_path, creds)
+                if image_id:
+                    insert_image_to_doc(document_id, image_id, creds)
+                    st.write("Image inserted in the document.")
+
+        # Formulaire pour insérer du texte
+        with st.form("insert_text"):
+            text = st.text_area("Enter text to insert into the document")
+            submitted3 = st.form_submit_button("Insert Text")
+            if submitted3:
+                insert_text_to_doc(document_id, text, creds)
+                st.write("Text inserted in the document.")
