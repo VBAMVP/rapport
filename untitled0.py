@@ -7,8 +7,8 @@ import google_auth_httplib2
 import httplib2
 
 # Remplacez ceci par vos propres informations d'authentification
-CLIENT_ID = "617474917009-egh3ngbg23ti3a3ju2ejdm18kr0pue0n.apps.googleusercontent.com"
-CLIENT_SECRET = "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"
+CLIENT_ID = "YOUR_CLIENT_ID"
+CLIENT_SECRET = "YOUR_CLIENT_SECRET"
 
 def create_google_service(refresh_token):
     creds = Credentials(None, refresh_token=refresh_token, token_uri='https://oauth2.googleapis.com/token', client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
@@ -59,15 +59,11 @@ def insert_text_to_doc(docs_service, document_id, text):
 def main():
     st.title("Google Docs Creator")
 
-     refresh_token = st.text_input("Enter your Google refresh token", type="password")
-     if refresh_token:
-         docs_service, drive_service = create_google_service(refresh_token)
+    refresh_token = st.text_input("Enter your Google refresh token", type="password")
 
-    
-    
-        # Création des services Google Docs et Drive avec le token de rafraîchissement
-        docs_service, drive_service = create_google_service()
-    
+    if refresh_token:
+        docs_service, drive_service = create_google_service(refresh_token)
+
         # Interface pour créer un nouveau document
         with st.form("create_doc"):
             doc_title = st.text_input("Enter the title for the new document")
@@ -76,7 +72,7 @@ def main():
                 document_id = create_google_doc(docs_service, doc_title)
                 if document_id:
                     st.write(f"Document created with ID: {document_id}")
-    
+
         # Interface pour télécharger et insérer une image
         with st.form("upload_image"):
             image_file = st.file_uploader("Upload an image", type=['png', 'jpg', 'jpeg'])
@@ -89,7 +85,7 @@ def main():
                 if image_id:
                     insert_image_to_doc(docs_service, document_id, image_id)
                     st.write("Image inserted in the document.")
-    
+
         # Interface pour insérer du texte
         with st.form("insert_text"):
             text = st.text_area("Enter text to insert into the document")
@@ -97,6 +93,6 @@ def main():
             if submitted3:
                 insert_text_to_doc(docs_service, document_id, text)
                 st.write("Text inserted in the document.")
-    
-    if __name__ == "__main__":
-        main()
+
+if __name__ == "__main__":
+    main()
