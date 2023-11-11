@@ -1,8 +1,6 @@
 import streamlit as st
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-import os
 from google.auth.transport.requests import Request
 
 # Remplacez ceci par votre ID client OAuth
@@ -20,19 +18,16 @@ def create_google_service(client_secret, refresh_token):
     # Rafraîchir explicitement le token
     creds.refresh(Request())
 
-    return build('docs', 'v1', credentials=creds), build('drive', 'v3', credentials=creds)
+    return build('docs', 'v1', credentials=creds)
 
 def create_google_doc(docs_service, doc_title):
-    # (Votre fonction create_google_doc inchangée)
-
-def upload_image_to_drive(drive_service, image_path):
-    # (Votre fonction upload_image_to_drive inchangée)
-
-def insert_image_to_doc(docs_service, document_id, image_id):
-    # (Votre fonction insert_image_to_doc inchangée)
-
-def insert_text_to_doc(docs_service, document_id, text):
-    # (Votre fonction insert_text_to_doc inchangée)
+    try:
+        document = docs_service.documents().create(body={'title': doc_title}).execute()
+        return document.get('documentId')
+    except Exception as e:
+        print(e)
+        st.error(f"Une erreur est survenue lors de la création du document : {e}")
+        return None
 
 def main():
     st.title("Google Docs Creator")
@@ -41,19 +36,16 @@ def main():
     refresh_token = st.text_input("Enter your Google refresh token", type="password")
 
     if client_secret and refresh_token:
-        docs_service, drive_service = create_google_service(client_secret, refresh_token)
+        docs_service = create_google_service(client_secret, refresh_token)
 
         # Interface pour créer un nouveau document
         with st.form("create_doc"):
-            # (Votre code de création de document inchangé)
-
-        # Interface pour télécharger et insérer une image
-        with st.form("upload_image"):
-            # (Votre code de téléchargement et insertion d'image inchangé)
-
-        # Interface pour insérer du texte
-        with st.form("insert_text"):
-            # (Votre code d'insertion de texte inchangé)
+            doc_title = st.text_input("Enter the title for the new document")
+            submitted1 = st.form_submit_button("Create Document")
+            if submitted1:
+                document_id = create_google_doc(docs_service, doc_title)
+                if document_id:
+                    st.write(f"Document created with ID: {document_id}")
 
 if __name__ == "__main__":
     main()
