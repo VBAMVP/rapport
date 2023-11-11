@@ -92,9 +92,11 @@ if uploaded_file is not None:
 
 # La logique de l'application vient ici
 if 'creds' in st.session_state:
-    print("Creds:", st.session_state['creds'])
+    st.text("Creds sont présents.")
+    st.json(st.session_state['creds'])
 else:
-    print("Creds non initialisé ou absent.")
+    st.error("Creds ne sont pas définis.")
+
 # Formulaire pour créer un nouveau document
 with st.form("create_doc"):
     doc_title = st.text_input("Enter the title for the new document")
