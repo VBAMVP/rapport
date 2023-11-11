@@ -91,7 +91,10 @@ if uploaded_file is not None:
         st.error("Échec de l'authentification.")
 
 # La logique de l'application vient ici
-
+if 'creds' in st.session_state:
+    print("Creds:", st.session_state['creds'])
+else:
+    print("Creds non initialisé ou absent.")
 # Formulaire pour créer un nouveau document
 with st.form("create_doc"):
     doc_title = st.text_input("Enter the title for the new document")
