@@ -41,7 +41,11 @@ def authenticate_google(creds_json):
     return st.session_state.get('creds', None)
 def create_google_doc(title):
     """Create a Google Doc with the given title."""
-    docs_service = build('docs', 'v1', credentials=creds)
+     try:
+        docs_service = build('docs', 'v1', credentials=creds)
+    except Exception as e:
+        print(e)  # Affiche l'erreur dans la console
+        st.error(f"Une erreur est survenue : {e}")  # Affiche l'erreur dans l'interface Streamlit
     document = docs_service.documents().create(body={'title': title}).execute()
     return document.get('documentId')
 
